@@ -6,9 +6,10 @@
  */
 
 const Spec = [
+  //--------------------------null
+  [/^\s+/, null],
   //--------------------------numbers
   [/^\d+/, "NUMBER"],
-
   //--------------------------strings
   [/^"[^"]*"/, "STRING"],
   [/^'[^']*'/, "STRING"],
@@ -43,13 +44,16 @@ class Tokenizer {
       if (tokenValue == null) {
         continue;
       }
+      if (tokenType == null) {
+        return this.getNextToken();
+      }
       return {
         type: tokenType,
         value: tokenValue,
       };
     }
 
-    throw new SyntaxError(`Unexpected token at: "${string[0]}"`);
+    throw new SyntaxError(`Unexpected token: '${string[0]}'`);
   }
 
   _match(regex, string) {
