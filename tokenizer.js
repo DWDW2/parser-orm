@@ -2,7 +2,6 @@
  * Tokenizer spec.
  * It defines the regular expressions that will be parsed using this parser
  */
-
 const Spec = [
   //--------------------------null
   [/^\s+/, null],
@@ -11,14 +10,35 @@ const Spec = [
   //--------------------------strings
   [/^"[^"]*"/, "STRING"],
   [/^'[^']*'/, "STRING"],
+  //--------------------------array brackets
+  [/^\[/, "LBRACKET"], // Left bracket
+  [/^\]/, "RBRACKET"], // Right bracket
+  //--------------------------comma separator
+  [/^,/, "COMMA"],
 ];
 
 class Tokenizer {
   init(string) {
     this._string = string;
     this._cursor = 0;
+    this._line = 1;
+    this._column = 1;
   }
 
+  _match(regex, string) {
+    const match = regex.exec(string);
+    if (match) {
+      const matchedString = match[0];
+      const newLines = matchedString.split("\n").length - 1;
+      this._line += newLines;
+      if (newLines) {
+        this._column = matchedString.length - matchedString.lastIndexOf("\n");
+      } else {
+        this._column += matchedString.length;
+      }
+    }
+    return match ? match[0] : null;
+  }
   isEOF() {
     return this._cursor === this._string.length;
   }
@@ -52,14 +72,6 @@ class Tokenizer {
     }
 
     throw new SyntaxError(`Unexpected token: '${string[0]}'`);
-  }
-
-  _match(regex, string) {
-    const match = new RegExp(regex).exec(string);
-    if (match == null) {
-      return null;
-    }
-    return match[0];
   }
 }
 

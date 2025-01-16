@@ -26,7 +26,31 @@ class Parser {
         return this.NumericLiteral();
       case "STRING":
         return this.StringLiteral();
+      case "LBRACKET":
+        return this.ArrayLiteral();
+      default:
+        throw new SyntaxError(`Unexpected token: ${this._lookahead.type}`);
     }
+  }
+
+  ArrayLiteral() {
+    this._eat("LBRACKET"); // Expect the opening bracket
+    const elements = [];
+
+    while (this._lookahead.type !== "RBRACKET") {
+      elements.push(this.Literal()); // Parse each element in the array
+      if (this._lookahead.type === "COMMA") {
+        this._eat("COMMA"); // Consume the comma between elements
+      } else {
+        break; // Break if no comma, assuming the array is ending
+      }
+    }
+
+    this._eat("RBRACKET"); // Expect the closing bracket
+    return {
+      type: "ArrayLiteral",
+      elements,
+    };
   }
 
   StringLiteral() {
@@ -47,18 +71,15 @@ class Parser {
 
   _eat(tokenType) {
     const token = this._lookahead;
-    if (token == null) {
-      throw new SyntaxError(`Unexpected end of input, expected:${tokenType}`);
+    if (!token) {
+      throw new SyntaxError(`Unexpected end of input, expected: ${tokenType}`);
     }
     if (token.type !== tokenType) {
       throw new SyntaxError(
-        `Unexpected token: ${token.type}, expected ${tokenType}`
+        `Unexpected token: ${token.type} at line ${token.line}, column ${token.column}. Expected ${tokenType}`
       );
     }
-
-    // go to the next token in the  suntax
     this._lookahead = this._tokenizer.getNextToken();
-
     return token;
   }
 }
