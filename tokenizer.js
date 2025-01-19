@@ -1,44 +1,36 @@
-/**
- * Tokenizer spec.
- * It defines the regular expressions that will be parsed using this parser
- */
 const Spec = [
-  //--------------------------null
-  [/^\s+/, null],
-  //--------------------------numbers
-  [/^\d+/, "NUMBER"],
-  //--------------------------strings
-  [/^"[^"]*"/, "STRING"],
-  [/^'[^']*'/, "STRING"],
-  //--------------------------array brackets
-  [/^\[/, "LBRACKET"], // Left bracket
-  [/^\]/, "RBRACKET"], // Right bracket
-  //--------------------------comma separator
-  [/^,/, "COMMA"],
+  //--------------------------whitespace
+  [/^\s+/, null], // Skip whitespace
+  //--------------------------keywords
+  [/^table/, "TABLE"], // "table" keyword
+  [/^primary_key/, "PRIMARY_KEY"], // "primary_key" keyword
+  [/^not_null/, "NOT_NULL"], // "not_null" keyword
+  [/^unique/, "UNIQUE"], // "unique" keyword
+  [/^default/, "DEFAULT"], // "default" keyword
+  //--------------------------data types
+  [/^serial/, "SERIAL"], // "serial" data type
+  [/^varchar/, "VARCHAR"], // "varchar" data type
+  [/^timestamp/, "TIMESTAMP"], // "timestamp" data type
+  //--------------------------symbols
+  [/^\{/, "LBRACE"], // Opening curly brace
+  [/^\}/, "RBRACE"], // Closing curly brace
+  [/^\(/, "LPAREN"], // Opening parenthesis
+  [/^\)/, "RPAREN"], // Closing parenthesis
+  [/^\[/, "LBRACKET"], // Opening square bracket
+  [/^\]/, "RBRACKET"], // Closing square bracket
+  [/^,/, "COMMA"], // Comma
+  //--------------------------identifiers and numbers
+  [/^[a-zA-Z_]\w*/, "IDENTIFIER"], // Identifiers (table/column names)
+  [/^\d+/, "NUMBER"], // Numbers
+  [/^"[^"]*"/, "STRING"], // String literals
 ];
 
 class Tokenizer {
   init(string) {
     this._string = string;
     this._cursor = 0;
-    this._line = 1;
-    this._column = 1;
   }
 
-  _match(regex, string) {
-    const match = regex.exec(string);
-    if (match) {
-      const matchedString = match[0];
-      const newLines = matchedString.split("\n").length - 1;
-      this._line += newLines;
-      if (newLines) {
-        this._column = matchedString.length - matchedString.lastIndexOf("\n");
-      } else {
-        this._column += matchedString.length;
-      }
-    }
-    return match ? match[0] : null;
-  }
   isEOF() {
     return this._cursor === this._string.length;
   }
@@ -53,15 +45,13 @@ class Tokenizer {
     }
 
     const string = this._string.slice(this._cursor);
-    //Generic tokenizer impementation
     for (const [regex, tokenType] of Spec) {
-      console.log(`Trying regex: ${regex} on string: ${string}`);
       const tokenValue = this._match(regex, string);
+      console.log(`parsing ${regex} and ${tokenType} :`, tokenValue);
       if (tokenValue == null) {
         continue;
       }
       this._cursor += tokenValue.length;
-      // Skip tokens that should be ignored (e.g., whitespace)
       if (tokenType == null) {
         return this.getNextToken();
       }
@@ -72,6 +62,14 @@ class Tokenizer {
     }
 
     throw new SyntaxError(`Unexpected token: '${string[0]}'`);
+  }
+
+  _match(regex, string) {
+    const match = regex.exec(string);
+    if (match == null) {
+      return null;
+    }
+    return match[0];
   }
 }
 

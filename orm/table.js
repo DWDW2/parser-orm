@@ -1,6 +1,7 @@
-import { Tokenizer } from "./tokenizer.js";
+import { Parser } from "../parser";
+import { Tokenizer } from "../tokenizer";
 
-class Parser {
+class ParserTable extends Parser {
   constructor() {
     this._string = "";
     this._tokenizer = new Tokenizer();
@@ -16,14 +17,14 @@ class Parser {
   Program() {
     return {
       type: "Program",
-      body: this.TableLiteral(),
+      body: this.TableLiteral(), // Entry point for parsing
     };
   }
 
   TableLiteral() {
-    this._eat("TABLE");
-    const tableName = this._eat("IDENTIFIER").value;
-    this._eat("LBRACE");
+    this._eat("TABLE"); // Expect "table"
+    const tableName = this._eat("IDENTIFIER").value; // Expect table name
+    this._eat("LBRACE"); // Expect "{"
 
     const columns = [];
     while (this._lookahead.type !== "RBRACE") {
@@ -119,38 +120,16 @@ class Parser {
         return this.NumericLiteral();
       case "STRING":
         return this.StringLiteral();
-      case "LBRACKET":
-        return this.ArrayLiteral();
       default:
         throw new SyntaxError(`Unexpected token: ${this._lookahead.type}`);
     }
-  }
-
-  ArrayLiteral() {
-    this._eat("LBRACKET"); // Expect the opening bracket
-    const elements = [];
-
-    while (this._lookahead.type !== "RBRACKET") {
-      elements.push(this.Literal()); // Parse each element in the array
-      if (this._lookahead.type === "COMMA") {
-        this._eat("COMMA"); // Consume the comma between elements
-      } else {
-        break; // Break if no comma, assuming the array is ending
-      }
-    }
-
-    this._eat("RBRACKET"); // Expect the closing bracket
-    return {
-      type: "ArrayLiteral",
-      elements,
-    };
   }
 
   StringLiteral() {
     const token = this._eat("STRING");
     return {
       type: "StringLiteral",
-      value: token.value.slice(1, -1),
+      value: token.value.slice(1, -1), // Remove surrounding quotes
     };
   }
 
@@ -169,7 +148,7 @@ class Parser {
     }
     if (token.type !== tokenType) {
       throw new SyntaxError(
-        `Unexpected token: ${token.type}. Expected ${tokenType}`
+        `Unexpected token: ${token.type}, expected ${tokenType}`
       );
     }
     this._lookahead = this._tokenizer.getNextToken();
@@ -177,4 +156,4 @@ class Parser {
   }
 }
 
-export { Parser };
+export { ParserTable };
