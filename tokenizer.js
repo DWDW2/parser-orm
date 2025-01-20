@@ -1,3 +1,8 @@
+/**
+ * Spec of the parser including all regex to parse 
+ * 
+ */
+
 const Spec = [
   //--------------------------whitespace
   [/^\s+/, null], // Skip whitespace
@@ -5,8 +10,9 @@ const Spec = [
   [/^table/, "TABLE"], // "table" keyword
   [/^primary_key/, "PRIMARY_KEY"], // "primary_key" keyword
   [/^not_null/, "NOT_NULL"], // "not_null" keyword
-  [/^unique/, "UNIQUE"], // "unique" keyword
+  [/^unique/, "UNIQUE"], // "unique" keywodrd
   [/^default/, "DEFAULT"], // "default" keyword
+  [/^current_timestamp/, "CURRENT_TIMESTAMP"], // "current_timestamp" keyword
   //--------------------------data types
   [/^serial/, "SERIAL"], // "serial" data type
   [/^varchar/, "VARCHAR"], // "varchar" data type

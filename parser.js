@@ -73,7 +73,17 @@ class Parser {
       case "VARCHAR":
         return this.VarcharType();
       case "TIMESTAMP":
-        return this._eat("TIMESTAMP").value;
+        const timestampType = this._eat("TIMESTAMP").value;
+        // Check for optional default current_timestamp
+        if (this._lookahead && this._lookahead.type === "DEFAULT") {
+          const defaultConstraint = this.DefaultConstraint();
+          return {
+            type: "TimestampWithDefault",
+            dataType: timestampType,
+            default: defaultConstraint
+          };
+        }
+        return timestampType;
       default:
         throw new SyntaxError(
           `Unexpected token: ${this._lookahead.type}, expected a data type`
@@ -105,11 +115,23 @@ class Parser {
   }
 
   DefaultConstraint() {
-    this._eat("DEFAULT"); // Expect "default"
-    const defaultValue = this.Literal(); // Expect a literal value
+    this._eat("DEFAULT");
+    
+    // Handle special case for current_timestamp
+    if (this._lookahead.type === "CURRENT_TIMESTAMP") {
+      const timestamp = this._eat("CURRENT_TIMESTAMP");
+      return {
+        type: "Default",
+        value: {
+          type: "CurrentTimestamp",
+          value: timestamp.value
+        }
+      };
+    }
+    
     return {
       type: "Default",
-      value: defaultValue,
+      value: this.Literal()
     };
   }
 
