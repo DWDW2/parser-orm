@@ -17,17 +17,14 @@ function generateColumn(columnNode) {
   
   const parts = [columnNode.name];
   
-  // Handle data type
   if (typeof columnNode.dataType === 'string') {
     parts.push(columnNode.dataType.toUpperCase());
   } else if (columnNode.dataType.type === 'TimestampWithDefault') {
     parts.push('TIMESTAMP');
   }
   
-  // Handle constraints
   const constraints = [];
   
-  // Add constraints from the constraints array
   columnNode.constraints.forEach(constraint => {
     switch (constraint.type) {
       case 'PrimaryKey':
@@ -45,7 +42,6 @@ function generateColumn(columnNode) {
     }
   });
   
-  // Handle timestamp with default as a special case
   if (columnNode.dataType.type === 'TimestampWithDefault') {
     constraints.push('DEFAULT CURRENT_TIMESTAMP');
   }

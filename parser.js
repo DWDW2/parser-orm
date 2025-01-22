@@ -1,5 +1,17 @@
 import { Tokenizer } from "./tokenizer.js";
-
+/**
+ * Parser to parser custom defined syntax and later generate AST with sql queries.
+ * It can parse only the way I defined:
+ * ```
+ * table users {
+      id serial primary_key,
+      username varchar(50) not_null unique,
+      email varchar(100) not_null unique,
+      password varchar(255) not_null,
+      created_at timestamp default current_timestamp
+  }
+  ```
+ */
 class Parser {
   constructor() {
     this._string = "";
@@ -55,7 +67,7 @@ class Parser {
       this._lookahead.type === "UNIQUE" ||
       this._lookahead.type === "DEFAULT"
     ) {
-      constraints.push(this.Constraint()); // Parse constraints
+      constraints.push(this.Constraint());
     }
 
     return {
@@ -73,17 +85,7 @@ class Parser {
       case "VARCHAR":
         return this.VarcharType();
       case "TIMESTAMP":
-        const timestampType = this._eat("TIMESTAMP").value;
-        // Check for optional default current_timestamp
-        if (this._lookahead && this._lookahead.type === "DEFAULT") {
-          const defaultConstraint = this.DefaultConstraint();
-          return {
-            type: "TimestampWithDefault",
-            dataType: timestampType,
-            default: defaultConstraint
-          };
-        }
-        return timestampType;
+        return this._eat("TIMESTAMP").value;
       default:
         throw new SyntaxError(
           `Unexpected token: ${this._lookahead.type}, expected a data type`
@@ -115,23 +117,17 @@ class Parser {
   }
 
   DefaultConstraint() {
-    this._eat("DEFAULT");
-    
-    // Handle special case for current_timestamp
-    if (this._lookahead.type === "CURRENT_TIMESTAMP") {
-      const timestamp = this._eat("CURRENT_TIMESTAMP");
+    this._eat("DEFAULT"); // Expect "default"
+    if (this._lookahead.type === "RBRACE" || this._lookahead.type === "COMMA") {
       return {
         type: "Default",
-        value: {
-          type: "CurrentTimestamp",
-          value: timestamp.value
-        }
+        value: null,
       };
     }
-    
+    const defaultValue = this.Literal(); // Expect a literal value
     return {
       type: "Default",
-      value: this.Literal()
+      value: defaultValue,
     };
   }
 

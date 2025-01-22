@@ -5,19 +5,29 @@
 
 const Spec = [
   //--------------------------whitespace
+
   [/^\s+/, null], // Skip whitespace
+
+  
   //--------------------------keywords
+
   [/^table/, "TABLE"], // "table" keyword
   [/^primary_key/, "PRIMARY_KEY"], // "primary_key" keyword
   [/^not_null/, "NOT_NULL"], // "not_null" keyword
   [/^unique/, "UNIQUE"], // "unique" keywodrd
   [/^default/, "DEFAULT"], // "default" keyword
   [/^current_timestamp/, "CURRENT_TIMESTAMP"], // "current_timestamp" keyword
+
+
   //--------------------------data types
+
   [/^serial/, "SERIAL"], // "serial" data type
   [/^varchar/, "VARCHAR"], // "varchar" data type
   [/^timestamp/, "TIMESTAMP"], // "timestamp" data type
+
+
   //--------------------------symbols
+
   [/^\{/, "LBRACE"], // Opening curly brace
   [/^\}/, "RBRACE"], // Closing curly brace
   [/^\(/, "LPAREN"], // Opening parenthesis
@@ -25,7 +35,10 @@ const Spec = [
   [/^\[/, "LBRACKET"], // Opening square bracket
   [/^\]/, "RBRACKET"], // Closing square bracket
   [/^,/, "COMMA"], // Comma
+
+
   //--------------------------identifiers and numbers
+
   [/^[a-zA-Z_]\w*/, "IDENTIFIER"], // Identifiers (table/column names)
   [/^\d+/, "NUMBER"], // Numbers
   [/^"[^"]*"/, "STRING"], // String literals
