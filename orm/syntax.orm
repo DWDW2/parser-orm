@@ -1,0 +1,30 @@
+table users {
+  id serial primary_key,
+  username varchar(50) not_null unique,
+  email varchar(100) not_null unique,
+  password varchar(255) not_null,
+  created_at timestamp default current_timestamp
+}
+
+table posts {
+  id serial primary_key,
+  user_id serial not_null,
+  title varchar(255) not_null,
+  content text not_null,
+  created_at timestamp default current_timestamp
+}
+
+table comments {
+  id serial primary_key,
+  post_id serial not_null,
+  user_id serial not_null,
+  content text not_null,
+  created_at timestamp default current_timestamp
+}
+
+table likes {
+  id serial primary_key,
+  post_id serial not_null,
+  user_id serial not_null,
+  created_at timestamp default current_timestamp
+}
