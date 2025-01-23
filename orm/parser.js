@@ -1,4 +1,5 @@
 import { Tokenizer } from "./tokenizer.js";
+
 /**
  * Parser to parser custom defined syntax and later generate AST with sql queries.
  * It can parse only the way I defined:
