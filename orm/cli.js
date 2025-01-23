@@ -2,14 +2,13 @@
 
 import fs from "fs";
 import path from "path";
-
-// Get the command arguments
+/**
+ * Module to genereate sample ORM schema.
+ */
 const args = process.argv.slice(2);
-
-// Check if the first argument is "init"
 if (args[0] === "init") {
   // Define the target directory and file path
-  const ormFolderPath = path.join(process.cwd(), "orm");
+  const ormFolderPath = path.join(process.cwd(), "schemas");
   const schemaFilePath = path.join(ormFolderPath, "schema.orm");
 
   try {
@@ -26,18 +25,14 @@ if (args[0] === "init") {
     }
 
     // Create the schema file with basic content
-    const schemaFileContent = `# Basic ORM schema
-# Example entity definition
-
-entity User {
-  id: Int @id @autoIncrement
-  name: String
-  email: String @unique
-  createdAt: DateTime @default(now())
-  updatedAt: DateTime @updatedAt
+    const schemaFileContent = `
+table users {
+  id serial primary_key,
+  username varchar(50) not_null unique,
+  email varchar(100) not_null unique,
+  password varchar(255) not_null,
+  created_at timestamp default current_timestamp
 }
-
-# You can define more entities here
 `;
 
     fs.writeFileSync(schemaFilePath, schemaFileContent);

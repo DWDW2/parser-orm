@@ -2,12 +2,26 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Parser } from "./orm/parser.js";
-
+import { generateSQL } from "./orm/sqlGenerator.js";
+import { DatabaseConnector } from "./orm/connector.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const syntaxFilePath = path.resolve(__dirname, "orm/syntax.orm");
+const syntaxFilePath = path.resolve(__dirname, "schemas/schema.orm");
 const syntax = fs.readFileSync(syntaxFilePath, "utf-8");
 const parser = new Parser();
 const ast = parser.parse(syntax);
-console.log(JSON.stringify(ast, null, 2));
+const sql = generateSQL(ast);
+
+const config = {
+  connectionString:
+    "postgresql://postgres:Aqb2Pu6Fcd1Y5EPs@db.lwnamruwvfuqbjuallnv.supabase.co:5432/postgres",
+};
+
+const connector = new DatabaseConnector(config);
+
+(async () => {
+  await connector.connect();
+  await connector.query(sql);
+  await connector.disconnect();
+})();
