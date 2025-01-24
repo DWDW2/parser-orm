@@ -16,7 +16,7 @@ npm install
 To generate SQL schemas, use the following command:
 
 ```bash
-npm run generate-schema
+orm init
 ```
 
 To query the database, use the provided JavaScript functions. Here is an
