@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Parser } from "./orm/parser.js";
-import { OrmClient } from "./orm/client.js";
+import { Parser } from "../orm/parser.js";
+import { OrmClient } from "../orm/client.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,11 +23,8 @@ const client = new OrmClient(config, ast);
   await client.connect();
 
   try {
-    const newUser = await client.users.insert({
-      username: "john_doe",
-      email: "john@example.com",
-      password: "securepassword",
-      created_at: new Date().toISOString(),
+    const newUser = await client.users.query({
+      select: ["id", "username", "email", "created_at"],
     });
     console.log("Inserted user:", newUser);
   } catch (error) {
@@ -38,20 +35,20 @@ const client = new OrmClient(config, ast);
     }
   }
 
-  const users = await client.users.query({
-    select: ["id", "username", "email", "created_at"],
-    where: { username: "john_doe" },
-  });
-  console.log("Queried users:", users);
+  //   const users = await client.users.query({
+  //     select: ["id", "username", "email", "created_at"],
+  //     where: { username: "john_doe" },
+  //   });
+  //   console.log("Queried users:", users);
 
-  const updatedUser = await client.users.update(
-    { id: users[0].id },
-    { email: "john.doe@example.com" }
-  );
-  console.log("Updated user:", updatedUser);
+  //   const updatedUser = await client.users.update(
+  //     { id: users[0].id },
+  //     { email: "john.doe@example.com" }
+  //   );
+  //   console.log("Updated user:", updatedUser);
 
-  const deletedUser = await client.users.delete({ id: users[0].id });
-  console.log("Deleted user:", deletedUser);
+  //   const deletedUser = await client.users.delete({ id: users[0].id });
+  //   console.log("Deleted user:", deletedUser);
 
   await client.disconnect();
 })();
