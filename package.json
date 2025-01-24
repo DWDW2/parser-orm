@@ -13,6 +13,9 @@
     "orm": "./orm/cli.js"
   },
   "dependencies": {
-    "pg": "^8.13.1"
+    "@supabase/supabase-js": "^2.48.0",
+    "pg": "^8.13.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   }
 }

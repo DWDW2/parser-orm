@@ -13,11 +13,12 @@ const parser = new Parser();
 const ast = parser.parse(syntax);
 const sql = generateSQL(ast);
 
+const dbFilePath = path.resolve(__dirname, "database.sqlite");
 const config = {
-  connectionString:
-    "postgresql://postgres:Aqb2Pu6Fcd1Y5EPs@db.lwnamruwvfuqbjuallnv.supabase.co:5432/postgres",
+  type: "sqlite",
+  filename: dbFilePath,
 };
-
+console.log(ast);
 const connector = new DatabaseConnector(config);
 
 (async () => {
