@@ -8,7 +8,7 @@ const Spec = [
 
   [/^\s+/, null], // Skip whitespace
 
-  
+  фва
   //--------------------------keywords
 
   [/^table/, "TABLE"], // "table" keyword
